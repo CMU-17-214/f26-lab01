@@ -23,11 +23,15 @@ public class InMemoryBookingStore implements BookingStore {
         return bookings.stream().filter(b -> b.id().equals(bookingId)).findFirst();
     }
 
+
     @Override
     public List<Booking> bookingsForRoom(Room room) {
-        // The bookings held for a single room.
-        return List.copyOf(bookings);
+        // Return only the bookings held for this room.
+        return bookings.stream()
+                .filter(booking -> booking.room().id().equals(room.id()))
+                .toList();
     }
+
 
     @Override
     public List<Booking> allBookings() {
