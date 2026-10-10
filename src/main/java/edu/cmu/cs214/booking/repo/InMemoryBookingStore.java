@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** An in-memory {@link BookingStore}. */
 public class InMemoryBookingStore implements BookingStore {
 
     private final List<Booking> bookings = new ArrayList<>();
@@ -20,18 +19,22 @@ public class InMemoryBookingStore implements BookingStore {
 
     @Override
     public Optional<Booking> findBooking(String bookingId) {
-        return bookings.stream().filter(b -> b.id().equals(bookingId)).findFirst();
+        return bookings.stream()
+                .filter(b -> b.id().equals(bookingId))
+                .findFirst();
     }
 
     @Override
     public List<Booking> bookingsForRoom(Room room) {
-        // The bookings held for a single room.
-        return List.copyOf(bookings);
+        // 修复：只返回属于传入room的预订
+        return bookings.stream()
+                .filter(b -> b.room().equals(room))
+                .toList();
     }
 
     @Override
     public List<Booking> allBookings() {
-        return List.copyOf(bookings);
+        return new ArrayList<>(bookings);
     }
 
     @Override
@@ -46,7 +49,9 @@ public class InMemoryBookingStore implements BookingStore {
 
     @Override
     public List<WaitlistEntry> waitlistForRoom(Room room) {
-        return waitlist.stream().filter(w -> w.room().id().equals(room.id())).toList();
+        return waitlist.stream()
+                .filter(w -> w.room().equals(room))
+                .toList();
     }
 
     @Override
