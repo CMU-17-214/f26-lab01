@@ -52,6 +52,19 @@ class BookingServiceTest {
     }
 
     @Test
+    void sameSlotInDifferentRoomsStaySeparate() {
+        BookingService svc = newService();
+        svc.book(roomA, alice, new TimeInterval(600, 660));
+        BookingResult r = svc.book(roomB, bob, new TimeInterval(600, 660));
+        assertInstanceOf(BookingResult.Confirmed.class, r);
+        // Regression: each room's booking list must contain only its own booking.
+        assertEquals(1, svc.listBookings(roomA).size());
+        assertEquals(1, svc.listBookings(roomB).size());
+        assertEquals(roomA.id(), svc.listBookings(roomA).get(0).room().id());
+        assertEquals(roomB.id(), svc.listBookings(roomB).get(0).room().id());
+    }
+
+    @Test
     void listBookingsReturnsConfirmedBookings() {
         BookingService svc = newService();
         svc.book(roomA, alice, new TimeInterval(600, 660));
